@@ -313,7 +313,7 @@
        "RoleName": "dataedu-redshift-spectrum-role"
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsSpectrumRole/Resource"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsSpectrumRole/Resource"
       }
      },
      "dataeduRsSpectrumRoleDefaultPolicyA0FFD389": {
@@ -340,7 +340,7 @@
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsSpectrumRole/DefaultPolicy/Resource"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsSpectrumRole/DefaultPolicy/Resource"
       }
      },
      "dataeduRsVPCB9E10F0D": {
@@ -353,12 +353,12 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "DataeduRedshiftEeStack/dataeduRsVPC"
+         "Value": "DataEduRedshiftStack/dataeduRsVPC"
         }
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/Resource"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/Resource"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet1SubnetB6AEEE94": {
@@ -388,12 +388,12 @@
         },
         {
          "Key": "Name",
-         "Value": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet1"
+         "Value": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet1"
         }
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet1/Subnet"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet1/Subnet"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet1RouteTableA5232156": {
@@ -405,12 +405,12 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet1"
+         "Value": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet1"
         }
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet1/RouteTable"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet1/RouteTable"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet1RouteTableAssociation4F6F060C": {
@@ -424,7 +424,7 @@
        }
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet1/RouteTableAssociation"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet1/RouteTableAssociation"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet1DefaultRouteE44ED23C": {
@@ -442,7 +442,7 @@
        "dataeduRsVPCVPCGW6EAEBDAB"
       ],
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet1/DefaultRoute"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet1/DefaultRoute"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet2Subnet6C908321": {
@@ -472,12 +472,12 @@
         },
         {
          "Key": "Name",
-         "Value": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet2"
+         "Value": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet2"
         }
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet2/Subnet"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet2/Subnet"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet2RouteTable3B7BCE2A": {
@@ -489,12 +489,12 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet2"
+         "Value": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet2"
         }
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet2/RouteTable"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet2/RouteTable"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet2RouteTableAssociationEC286C1C": {
@@ -508,7 +508,7 @@
        }
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet2/RouteTableAssociation"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet2/RouteTableAssociation"
       }
      },
      "dataeduRsVPCdataedurspublicSubnet2DefaultRouteBE93ADD4": {
@@ -526,7 +526,7 @@
        "dataeduRsVPCVPCGW6EAEBDAB"
       ],
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/dataedu-rs-public-Subnet2/DefaultRoute"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/dataedu-rs-public-Subnet2/DefaultRoute"
       }
      },
      "dataeduRsVPCIGW02B5ACA9": {
@@ -535,12 +535,12 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "DataeduRedshiftEeStack/dataeduRsVPC"
+         "Value": "DataEduRedshiftStack/dataeduRsVPC"
         }
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/IGW"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/IGW"
       }
      },
      "dataeduRsVPCVPCGW6EAEBDAB": {
@@ -554,7 +554,7 @@
        }
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsVPC/VPCGW"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsVPC/VPCGW"
       }
      },
      "dataeduRsSG189AC86A": {
@@ -573,7 +573,7 @@
        }
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsSG/Resource"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsSG/Resource"
       }
      },
      "dataeduRsSGfromIndirectPeerIndirectPort38A45E35": {
@@ -598,7 +598,7 @@
        }
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsSG/from {IndirectPeer}:{IndirectPort}"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsSG/from {IndirectPeer}:{IndirectPort}"
       }
      },
      "dataeduRsClusterParameterGroup": {
@@ -614,7 +614,7 @@
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsClusterParameterGroup"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsClusterParameterGroup"
       }
      },
      "dataeduRsClusterSubnetGroup": {
@@ -631,7 +631,7 @@
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduRsClusterSubnetGroup"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduRsClusterSubnetGroup"
       }
      },
      "dataeduSingleNodeRsCluster": {
@@ -680,7 +680,7 @@
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduSingleNodeRsCluster"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduSingleNodeRsCluster"
       },
       "Condition": "IsSingleNodeClusterCondition"
      },
@@ -733,19 +733,19 @@
        ]
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/dataeduMultiNodeRsCluster"
+       "aws:cdk:path": "DataEduRedshiftStack/dataeduMultiNodeRsCluster"
       },
       "Condition": "IsMultiNodeClusterCondition"
      },
      "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-       "Analytics": "v2:deflate64:H4sIAAAAAAAA/31RTW/CMAz9Lbun2QBpO6MeELeqRVynNDXD0CYocYaqKP99+ehA2mEnPz8/59nOmm82/O1F3G0lh2s1Ys99R0JeWX1SjTBiAgKTklqrAQm1YlH86VFM3Ld6hFTLsdEjyjn3ZRQYyDX3x5tM3LGpWeP6WOhcr4AS90StdgQH0ZfnCv/kttZqiSKb/4oT2Ks4W1TuBMFdzIvNkm0prnGeQBHrQDqDNO+Mdrds8C+xV18GrA3MwGDPeCLu0/6js9HucZNH71IoQ/9lQ2AtWO2MLIdacGBKD8Av9vV79c5XH/ELLhaxMk4RTsDbEn8AJhsz+54BAAA="
+       "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Ru27DMAz8lu6yWgdF0TXwEGQz7CJrIctMw8SWAolqYAj69+rhJkCHTjwejzqS2vDXmr88iZut5HipJhy470nIC2uOqhVGzEBgUtJoNSKhViyKPz2KmftOT5BqObZ6QrnkvowCA7nh/nCViTu0DWvdEAu9GxRQ4h6o047gQwzlucI/uK21WqLI5r/iBPYqzhaVO0FwE8tqs2ZbimucZlDEepDOIC07o901G/xL7NWXAWsDMzDaEx6J+7T/5Gy0u9/k3rsWytB/2RBYB1Y7I8uhVhyY0iPws33+rt94/R6/4GwRK+MU4Qy8K/EHzpFWRZ4BAAA="
       },
       "Metadata": {
-       "aws:cdk:path": "DataeduRedshiftEeStack/CDKMetadata/Default"
+       "aws:cdk:path": "DataEduRedshiftStack/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
      }
     },
-   }
+}
