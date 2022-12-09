@@ -1,0 +1,205 @@
+{
+    "Parameters": {
+        "AdminUsername": {
+            "Type": "String",
+            "Default": "rsadmin",
+            "AllowedPattern": "([a-z])([a-z]|[0-9])*",
+            "Description": "The user name that is associated with the admin user account for the namespace that is being created."
+           },
+        "AdminUserPassword": {
+            "Type": "String",
+            "Default": "iamRsadmin1!",
+            "Description": "The password that is associated with the admin user account for the namespace that is being created.",
+            "NoEcho": true
+        },
+        "DbName": {
+            "Type": "String",
+            "Default": "dwh",
+            "AllowedPattern": "([a-z]|[0-9])+",
+            "Description": "The name of the database to be created when the namespace is created."
+        },
+        "KmsKeyId": {
+         "Type": "String",
+         "Description": "The ID of the AWS Key Management Service key used to encrypt your data."
+        },
+        "NamespaceName": {
+            "Type": "String",
+            "Default": "dataedu-redshift-serverless-namespace",
+            "Description": "The name of the Redshift Serverless Namespace."
+        },
+    },
+    "Resources": {
+        "dataeduRsServerlessRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+             "AssumeRolePolicyDocument": {
+              "Statement": [
+               {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                 "Service": [
+                    "redshift-serverless.amazonaws.com",
+                    "redshift.amazonaws.com",
+                    "sagemaker.amazonaws.com"
+                 ]
+                }
+               }
+              ],
+              "Version": "2012-10-17"
+             },
+             "ManagedPolicyArns": [
+              {
+               "Fn::Join": [
+                "",
+                [
+                 "arn:",
+                 {
+                  "Ref": "AWS::Partition"
+                 },
+                 ":iam::aws:policy/AmazonRedshiftAllCommandsFullAccess"
+                ]
+               ]
+              },
+             ],
+             "RoleName": "dataedu-redshift-serverless-role"
+            },
+        },
+        "dataeduRsServerlessRoleDefaultPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+             "PolicyDocument": {
+              "Statement": [
+               {
+                "Action": [
+                    "s3:GetObject",
+                    "s3:GetBucketAcl",
+                    "s3:GetBucketCors",
+                    "s3:GetEncryptionConfiguration",
+                    "s3:GetBucketLocation",
+                    "s3:ListBucket",
+                    "s3:ListAllMyBuckets",
+                    "s3:ListMultipartUploadParts",
+                    "s3:ListBucketMultipartUploads",
+                    "s3:PutObject",
+                    "s3:PutBucketAcl",
+                    "s3:PutBucketCors",
+                    "s3:DeleteObject",
+                    "s3:AbortMultipartUpload",
+                    "s3:CreateBucket"
+                ],
+                "Effect": "Allow",
+                "Resource": "arn:aws:s3:::*"
+               }
+              ],
+              "Version": "2012-10-17"
+             },
+             "PolicyName": "dataeduRsServerlessRoleDefaultPolicy",
+             "Roles": [
+              {
+               "Ref": "dataeduRsServerlessRole"
+              }
+             ]
+            },
+        },
+        "dataeduRsSpectrumRole": {
+         "Type": "AWS::IAM::Role",
+         "Properties": {
+          "AssumeRolePolicyDocument": {
+           "Statement": [
+            {
+             "Action": "sts:AssumeRole",
+             "Effect": "Allow",
+             "Principal": {
+              "Service": "redshift.amazonaws.com"
+             }
+            }
+           ],
+           "Version": "2012-10-17"
+          },
+          "ManagedPolicyArns": [
+           {
+            "Fn::Join": [
+             "",
+             [
+              "arn:",
+              {
+               "Ref": "AWS::Partition"
+              },
+              ":iam::aws:policy/AWSGlueConsoleFullAccess"
+             ]
+            ]
+           },
+           {
+            "Fn::Join": [
+             "",
+             [
+              "arn:",
+              {
+               "Ref": "AWS::Partition"
+              },
+              ":iam::aws:policy/AmazonS3ReadOnlyAccess"
+             ]
+            ]
+           }
+          ],
+          "RoleName": "dataedu-redshift-spectrum-role"
+         },
+        },
+        "dataeduRsSpectrumRoleDefaultPolicy": {
+         "Type": "AWS::IAM::Policy",
+         "Properties": {
+          "PolicyDocument": {
+           "Statement": [
+            {
+             "Action": [
+              "glue:*",
+              "lakeformation:GetDataAccess"
+             ],
+             "Effect": "Allow",
+             "Resource": "*"
+            }
+           ],
+           "Version": "2012-10-17"
+          },
+          "PolicyName": "dataeduRsSpectrumRoleDefaultPolicy",
+          "Roles": [
+           {
+            "Ref": "dataeduRsSpectrumRole"
+           }
+          ]
+         },
+        },
+        "dataeduRsServerlessNamespace": {
+            "Type" : "AWS::RedshiftServerless::Namespace",
+            "Properties" : {
+                "AdminUsername" : {
+                    "Ref": "AdminUsername"
+                },
+                "AdminUserPassword" : {
+                    "Ref": "AdminUserPassword"
+                },
+                "DbName" : {
+                    "Ref": "DbName"
+                },
+                "DefaultIamRoleArn" : {
+                    "Fn::GetAtt" : ["dataeduRsServerlessRole", "Arn"]
+                },
+                "IamRoles" : [
+                    {"Fn::GetAtt" : ["dataeduRsServerlessRole", "Arn"]}
+                ],
+                "KmsKeyId" : {
+                    "Ref": "KmsKeyId"
+                },
+                "LogExports" : [
+                    "userlog",
+                    "connectionlog",
+                    "useractivitylog"
+                ],
+                "NamespaceName" : {
+                    "Ref": "NamespaceName"
+                },
+            }
+        },
+    },
+}
