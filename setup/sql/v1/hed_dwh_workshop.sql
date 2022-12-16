@@ -59,7 +59,7 @@ CREATE TABLE sis.university AS SELECT * FROM sisraw.university;
 /*
 --Step 2 - Select some data from the local data warehouse tables
 */
-SELECT COUNT(*) from sis.course_registration;
+SELECT COUNT(*) from sis.student;
 
 /*
 --Step 3 - Query data from the data lake
@@ -80,6 +80,103 @@ FROM
         ON submission_dim.user_id = student.student_id
     JOIN lmsraw.assignment_dim
         ON submission_dim.assignment_id = assignment_dim.assignment_id;
+
+/*
+============================================================================================
+============================================================================================
+*/
+
+/*
+============================================================================================
+Identify consumer namespace
+============================================================================================
+*/
+-- This should be run on consumer
+select current_namespace;
+-- Save the <<consumer namespace>>
+
+/*
+============================================================================================
+Create data shares on producer and objects to them
+============================================================================================
+*/
+-- Creating data shares on producer
+CREATE DATASHARE sis_share SET PUBLICACCESSIBLE TRUE;
+CREATE DATASHARE lmsraw_share SET PUBLICACCESSIBLE TRUE;
+
+-- Adding schema to the data shares
+ALTER DATASHARE sis_share ADD SCHEMA public;
+ALTER DATASHARE lmsraw_share ADD SCHEMA public;
+
+-- Adding tables that we need later to the data shares.
+-- We can add all the tables also if required
+ALTER DATASHARE sis_share ADD TABLE public.semester;
+ALTER DATASHARE sis_share ADD TABLE public.student;
+ALTER DATASHARE lmsraw_share ADD TABLE public.assignment_dim;
+ALTER DATASHARE lmsraw_share ADD TABLE public.submission_dim;
+ALTER DATASHARE lmsraw_share ADD TABLE public.submission_fact;
+ALTER DATASHARE lmsraw_share ADD TABLE public.requests;
+
+-- View shared objects
+show datashares;
+select * from SVV_DATASHARE_OBJECTS;
+
+-- Granting access to consumer
+Grant USAGE ON DATASHARE sis_share to NAMESPACE '<<consumer namespace>>'
+Grant USAGE ON DATASHARE lmsraw_share to NAMESPACE '<<consumer namespace>>'
+
+/*
+============================================================================================
+Identify producer namespace
+============================================================================================
+*/
+-- This should be run on producer
+select current_namespace;
+-- Save the <producer namespace>>
+
+/*
+============================================================================================
+Query data from consumer
+============================================================================================
+*/
+-- View shared objects
+show datashares;
+select * from SVV_DATASHARE_OBJECTS;
+
+-- Create local database on consumer from data shares on producer
+CREATE DATABASE sis FROM DATASHARE sis_share OF NAMESPACE '<<producer namespace>';
+CREATE DATABASE lmsraw FROM DATASHARE lmsraw_share OF NAMESPACE '<<producer namespace>';
+
+-- Re-run Steps 2 to 4 on consumer
+/*
+--Step 2 - Select some data from the local data warehouse tables
+*/
+SELECT COUNT(*) from sis.student;
+
+/*
+--Step 3 - Query data from the data lake
+*/
+SELECT COUNT(*) from lmsraw.requests;
+
+/*
+--Step 4 - Executing a query combining data lake and data warehouse tables
+*/
+SELECT
+    TO_DATE(assignment_dim.all_day_date, 'YYYY-MM-DD') due_date,
+    TO_DATE(submission_dim.submitted_at, 'YYYY-MM-DD') submitted_date,
+    DATEDIFF( day, due_date, submitted_date) relative_submit_date,
+    *
+FROM
+    lmsraw.submission_dim
+    JOIN sis.student
+        ON submission_dim.user_id = student.student_id
+    JOIN lmsraw.assignment_dim
+        ON submission_dim.assignment_id = assignment_dim.assignment_id;
+
+/*
+============================================================================================
+============================================================================================
+*/
 
 /*
 --Step 5 - Create a new schema to abstract the data warehouse / data lake boundary for analysts
