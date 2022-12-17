@@ -1,48 +1,46 @@
 /*
 ===============================================================================================
-Starting from an empty Redshift database (dwh), the following steps setup the external schemas.
+Step 1: Create SIS nd LMS external schemas in producer's DEV database.
+-- Query editor on producer's DEV database.
 ===============================================================================================
 */
 
 /*
---Prerequisites - Create external schema to connect to the SIS data in the data lake
--- Ensure that the correct database (dwh) is selected as context (above).
--- There should be 12 tables in the external schema.  See list below.
+Create SIS external schema to connect to the SIS data in the data lake.
+-- There should be 12 tables in the external schema.
 */
 CREATE EXTERNAL SCHEMA sisraw 
 FROM
     data catalog
     database 'db_raw_sisdemo' region '${AWS::Region}'
-    iam_role '${RedshiftSpectrumRoleArn}';
+    iam_role '${RedshiftRoleArn}';
 
 /*
---Prerequisites - Create external schema to connect to the LMS data in the data lake
--- There should be 10 tables in the external schema, including the following:
--- assignment_dim, assignment_fact, submission_dim, submission_fact and requests.
+Create LMS external schema to connect to the LMS data in the data lake.
+-- There should be 10 tables in the external schema,
 */
 CREATE EXTERNAL SCHEMA lmsraw
 FROM
     data catalog
     database 'db_raw_lmsdemo' region '${AWS::Region}'
-    iam_role '${RedshiftSpectrumRoleArn}';
+    iam_role '${RedshiftRoleArn}';
+
 
 /*
 ============================================================================================
+Step 2: Create SIS schema and load SIS tables in producer's DEV database.
+-- Query editor on producer's DEV database.
 ============================================================================================
 */
 
 /*
-============================================================================================
-The following steps are what we demonstrate in the video and plan to do for the event. 
-If concerned about running short on time, please perform the steps ahead of the event.
-You can then just walk through rather than building the configuration during the demo.
-============================================================================================
-*/
-
-/*
---Step 1 - Run the following steps to load the SIS datasets directly into Redshift.
+Create SIS schema.
 */
 CREATE SCHEMA sis;
+
+/*
+Load SIS tables.
+*/
 CREATE TABLE sis.course AS SELECT * FROM sisraw.course;
 CREATE TABLE sis.course_outcome AS SELECT * FROM sisraw.course_outcome;
 CREATE TABLE sis.course_registration  AS SELECT * FROM sisraw.course_registration;
@@ -57,17 +55,30 @@ CREATE TABLE sis.student AS SELECT * FROM sisraw.student;
 CREATE TABLE sis.university AS SELECT * FROM sisraw.university;
 
 /*
---Step 2 - Select some data from the local data warehouse tables
+Drop SIS external schema.
 */
-SELECT COUNT(*) from sis.student;
+DROP SCHEMA sisraw;
+
 
 /*
---Step 3 - Query data from the data lake
+============================================================================================
+Step 3: Execute test queries on producer's DEV database.
+-- Query editor on producer's DEV database.
+============================================================================================
+*/
+
+/*
+Query 1: Query SIS data from SIS table, i.e., data warehouse table.
+*/
+SELECT COUNT(*) from sis.course_registration;
+
+/*
+Query 2: Query LMS data from LMS external schema table, i.e., data lake table.
 */
 SELECT COUNT(*) from lmsraw.requests;
 
 /*
---Step 4 - Executing a query combining data lake and data warehouse tables
+Query 3: Execute a query that joins SIS table with LMS external schema tables. 
 */
 SELECT
     TO_DATE(assignment_dim.all_day_date, 'YYYY-MM-DD') due_date,
@@ -81,85 +92,112 @@ FROM
     JOIN lmsraw.assignment_dim
         ON submission_dim.assignment_id = assignment_dim.assignment_id;
 
-/*
-============================================================================================
-============================================================================================
-*/
 
 /*
 ============================================================================================
-Identify consumer namespace
+Step 4: Identify consumer namespace.
+-- Query editor on consumer's DEV database.
 ============================================================================================
 */
--- This should be run on consumer
 select current_namespace;
--- Save the <<consumer namespace>>
+-- Save the <<consumer namespace>>.
+
 
 /*
 ============================================================================================
-Create data shares on producer and objects to them
+Step 5: Create data share from producer's DEV database and add objects to the data share.
+-- Query editor on producer's DEV database.
 ============================================================================================
 */
--- Creating data shares on producer
+-- Create SIS data share.
 CREATE DATASHARE sis_share SET PUBLICACCESSIBLE TRUE;
-CREATE DATASHARE lmsraw_share SET PUBLICACCESSIBLE TRUE;
 
--- Adding schema to the data shares
-ALTER DATASHARE sis_share ADD SCHEMA public;
-ALTER DATASHARE lmsraw_share ADD SCHEMA public;
+-- Add SIS schema to the SIS data share.
+ALTER DATASHARE sis_share ADD SCHEMA sis;
 
--- Adding tables that we need later to the data shares.
--- We can add all the tables also if required
-ALTER DATASHARE sis_share ADD TABLE public.semester;
-ALTER DATASHARE sis_share ADD TABLE public.student;
-ALTER DATASHARE lmsraw_share ADD TABLE public.assignment_dim;
-ALTER DATASHARE lmsraw_share ADD TABLE public.submission_dim;
-ALTER DATASHARE lmsraw_share ADD TABLE public.submission_fact;
-ALTER DATASHARE lmsraw_share ADD TABLE public.requests;
+-- Add all SIS tables to the SIS data share.
+ALTER DATASHARE sis_share ADD TABLE sis.course;
+ALTER DATASHARE sis_share ADD TABLE sis.course_outcome;
+ALTER DATASHARE sis_share ADD TABLE sis.course_registration;
+ALTER DATASHARE sis_share ADD TABLE sis.course_schedule;
+ALTER DATASHARE sis_share ADD TABLE sis.degree_plan;
+ALTER DATASHARE sis_share ADD TABLE sis.department;
+ALTER DATASHARE sis_share ADD TABLE sis.ed_level;
+ALTER DATASHARE sis_share ADD TABLE sis.faculty;
+ALTER DATASHARE sis_share ADD TABLE sis.school;
+ALTER DATASHARE sis_share ADD TABLE sis.semester;
+ALTER DATASHARE sis_share ADD TABLE sis.student;
+ALTER DATASHARE sis_share ADD TABLE sis.university;
 
--- View shared objects
+-- View shared objects.
 show datashares;
 select * from SVV_DATASHARE_OBJECTS;
 
--- Granting access to consumer
+-- Grant access to consumer.
 Grant USAGE ON DATASHARE sis_share to NAMESPACE '<<consumer namespace>>'
-Grant USAGE ON DATASHARE lmsraw_share to NAMESPACE '<<consumer namespace>>'
+
 
 /*
 ============================================================================================
-Identify producer namespace
+Step 6: Identify producer namespace.
+-- Query editor on producer's DEV database.
 ============================================================================================
 */
--- This should be run on producer
 select current_namespace;
--- Save the <producer namespace>>
+-- Save the <producer namespace>>.
+
 
 /*
 ============================================================================================
-Query data from consumer
+Step 7: Create SIS_DB database on consumer from data share on producer.
+-- Query editor on consumer's DEV database.
 ============================================================================================
 */
--- View shared objects
+-- View shared objects.
 show datashares;
 select * from SVV_DATASHARE_OBJECTS;
 
--- Create local database on consumer from data shares on producer
-CREATE DATABASE sis FROM DATASHARE sis_share OF NAMESPACE '<<producer namespace>';
-CREATE DATABASE lmsraw FROM DATASHARE lmsraw_share OF NAMESPACE '<<producer namespace>';
+-- Create SIS database on consumer from data shares on producer.
+CREATE DATABASE sis_db FROM DATASHARE sis_share OF NAMESPACE '<<producer namespace>';
 
--- Re-run Steps 2 to 4 on consumer
+
 /*
---Step 2 - Select some data from the local data warehouse tables
+===============================================================================================
+Step 8: Create LMS external schemas in consumer's DEV database.
+-- Query editor on consumer's DEV database.
+===============================================================================================
 */
-SELECT COUNT(*) from sis.student;
 
 /*
---Step 3 - Query data from the data lake
+Create LMS external schema to connect to the LMS data in the data lake.
+-- There should be 10 tables in the external schema,
+*/
+CREATE EXTERNAL SCHEMA lmsraw
+FROM
+    data catalog
+    database 'db_raw_lmsdemo' region '${AWS::Region}'
+    iam_role '${RedshiftRoleArn}';
+
+
+/*
+============================================================================================
+Step 9: Execute test queries on consumer's DEV database.
+-- Query editor on consumer's DEV database.
+============================================================================================
+*/
+
+/*
+Query 1: Query SIS data from SIS table, i.e., data warehouse table.
+*/
+SELECT COUNT(*) from sis_db.sis.course_registration;
+
+/*
+Query 2: Query LMS data from LMS external schema table, i.e., data lake table.
 */
 SELECT COUNT(*) from lmsraw.requests;
 
 /*
---Step 4 - Executing a query combining data lake and data warehouse tables
+Query 3: Execute a query that joins SIS table with LMS external schema tables. 
 */
 SELECT
     TO_DATE(assignment_dim.all_day_date, 'YYYY-MM-DD') due_date,
@@ -168,23 +206,26 @@ SELECT
     *
 FROM
     lmsraw.submission_dim
-    JOIN sis.student
+    JOIN sis_db.sis.student
         ON submission_dim.user_id = student.student_id
     JOIN lmsraw.assignment_dim
         ON submission_dim.assignment_id = assignment_dim.assignment_id;
 
+
 /*
 ============================================================================================
+Step 10: Create SIS_LMS schema and views on consumer's DEV database for data visualization.
+-- Query editor on consumer's DEV database.
 ============================================================================================
 */
 
 /*
---Step 5 - Create a new schema to abstract the data warehouse / data lake boundary for analysts
+Create SIS_LMS schema that abstract the boundary between data warehouse and data lake.
 */
 CREATE SCHEMA sis_lms;
 
 /*
---Step 6 - Use views to capture the logic to join data warehouse tables with data lake content
+Create view for visualizing on-time submission.
 */
 CREATE OR REPLACE VIEW sis_lms.submit_date_view
 AS
@@ -209,20 +250,20 @@ FROM
     	ON submission_dim.id = submission_fact.submission_id
     JOIN lmsraw.assignment_dim
         ON submission_dim.assignment_id = assignment_dim.assignment_id
-	JOIN sis.student
+	JOIN sis_db.sis.student
         ON submission_dim.user_id = student.student_id
-    JOIN sis.semester
+    JOIN sis_db.sis.semester
         ON student.admit_semester_id = semester_id
 WITH NO SCHEMA BINDING;
 
 /*
---Step 7 - Confirm that the new view is working
+Execute test query for on-time submission view.
 */
 SELECT * from sis_lms.submit_date_view;
 SELECT COUNT(*) from sis_lms.submit_date_view;
 
 /*
--- Step 8 - Create view of request table to support heat map
+Create view for visualizing LMS usage.
 */
 CREATE VIEW sis_lms.request_info_view
 AS SELECT
@@ -242,33 +283,15 @@ FROM
 WITH NO SCHEMA BINDING;
 
 /*
---Step 9 - Confirm that the new view is working
+Execute test query for LMS usage view.
 */
 SELECT * from sis_lms.request_info_view;
 SELECT COUNT(*) from sis_lms.request_info_view;
 
-/*
-============================================================================================
-============================================================================================
-*/
 
 /*
 ============================================================================================
-The following steps are for returning the dwh database to its pre-demo state
+THE END
 ============================================================================================
 */
 
-/*
--- DROP sis_lms schema
-*/
-DROP SCHEMA sis_lms CASCADE;
-
-/*
--- DROP lmsraw schema
-*/
-DROP SCHEMA lmsraw CASCADE;
-
-/*
--- DROP sisraw schema
-*/
-DROP SCHEMA sisraw;
