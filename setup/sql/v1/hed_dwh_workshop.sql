@@ -1,6 +1,6 @@
 /*
 ===============================================================================================
-Step 1: Create SIS nd LMS external schemas in producer's DEV database.
+Step 1: Create SIS and LMS external schemas in producer's DEV database.
 -- Query editor on producer's DEV database.
 ===============================================================================================
 */
@@ -105,17 +105,17 @@ select current_namespace;
 
 /*
 ============================================================================================
-Step 5: Create data share from producer's DEV database and add objects to the data share.
+Step 5: Create SIS datashare from producer's DEV database and add objects to the datashare.
 -- Query editor on producer's DEV database.
 ============================================================================================
 */
--- Create SIS data share.
+-- Create SIS datashare.
 CREATE DATASHARE sis_share SET PUBLICACCESSIBLE TRUE;
 
--- Add SIS schema to the SIS data share.
+-- Add SIS schema to the SIS datashare.
 ALTER DATASHARE sis_share ADD SCHEMA sis;
 
--- Add all SIS tables to the SIS data share.
+-- Add all SIS tables to the SIS datashare.
 ALTER DATASHARE sis_share ADD TABLE sis.course;
 ALTER DATASHARE sis_share ADD TABLE sis.course_outcome;
 ALTER DATASHARE sis_share ADD TABLE sis.course_registration;
@@ -149,7 +149,7 @@ select current_namespace;
 
 /*
 ============================================================================================
-Step 7: Create SIS_DB database on consumer from data share on producer.
+Step 7: Create SIS_DB database on consumer from SIS datashare on producer.
 -- Query editor on consumer's DEV database.
 ============================================================================================
 */
@@ -157,7 +157,7 @@ Step 7: Create SIS_DB database on consumer from data share on producer.
 show datashares;
 select * from SVV_DATASHARE_OBJECTS;
 
--- Create SIS database on consumer from data shares on producer.
+-- Create SIS database on consumer from datashares on producer.
 CREATE DATABASE sis_db FROM DATASHARE sis_share OF NAMESPACE '<<producer namespace>';
 
 
@@ -181,7 +181,7 @@ FROM
 
 /*
 ============================================================================================
-Step 9: Execute test queries on consumer's DEV database.
+Step 9: Execute test queries on consumer's DEV database and SIS_DB database (SIS datashare).
 -- Query editor on consumer's DEV database.
 ============================================================================================
 */
@@ -245,12 +245,6 @@ FROM
 WITH NO SCHEMA BINDING;
 
 /*
-Execute test query for LMS usage view.
-*/
-SELECT * from sis_lms.request_info_view;
-SELECT COUNT(*) from sis_lms.request_info_view;
-
-/*
 Create view for visualizing on-time submission.
 */
 CREATE OR REPLACE VIEW sis_lms.submit_date_view
@@ -282,8 +276,22 @@ FROM
         ON student.admit_semester_id = semester_id
 WITH NO SCHEMA BINDING;
 
+
 /*
-Execute test query for on-time submission view.
+============================================================================================
+Step 11: Execute test queries on SIS_LMS schema and views.
+-- Query editor on consumer's DEV database.
+============================================================================================
+*/
+
+/*
+Queries 1 and 2: Test LMS usage view.
+*/
+SELECT * from sis_lms.request_info_view;
+SELECT COUNT(*) from sis_lms.request_info_view;
+
+/*
+Queries 3 and 4: Test on-time submission view.
 */
 SELECT * from sis_lms.submit_date_view;
 SELECT COUNT(*) from sis_lms.submit_date_view;
