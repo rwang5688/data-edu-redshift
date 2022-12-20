@@ -225,6 +225,32 @@ Create SIS_LMS schema that abstract the boundary between data warehouse and data
 CREATE SCHEMA sis_lms;
 
 /*
+Create view for visualizing LMS usage.
+*/
+CREATE VIEW sis_lms.request_info_view
+AS SELECT
+    id,
+    EXTRACT(dayofweek FROM TO_DATE(LEFT("timestamp",10), 'YYYY-MM-DD')) dayofweek_num,
+    timestamp_year,
+    timestamp_month,
+    timestamp_day,
+    timestamp_hour,
+    user_id,
+    course_id,
+    http_method,
+    session_id,
+    url
+FROM
+    lmsraw.requests
+WITH NO SCHEMA BINDING;
+
+/*
+Execute test query for LMS usage view.
+*/
+SELECT * from sis_lms.request_info_view;
+SELECT COUNT(*) from sis_lms.request_info_view;
+
+/*
 Create view for visualizing on-time submission.
 */
 CREATE OR REPLACE VIEW sis_lms.submit_date_view
@@ -261,32 +287,6 @@ Execute test query for on-time submission view.
 */
 SELECT * from sis_lms.submit_date_view;
 SELECT COUNT(*) from sis_lms.submit_date_view;
-
-/*
-Create view for visualizing LMS usage.
-*/
-CREATE VIEW sis_lms.request_info_view
-AS SELECT
-    id,
-    EXTRACT(dayofweek FROM TO_DATE(LEFT("timestamp",10), 'YYYY-MM-DD')) dayofweek_num,
-    timestamp_year,
-    timestamp_month,
-    timestamp_day,
-    timestamp_hour,
-    user_id,
-    course_id,
-    http_method,
-    session_id,
-    url
-FROM
-    lmsraw.requests
-WITH NO SCHEMA BINDING;
-
-/*
-Execute test query for LMS usage view.
-*/
-SELECT * from sis_lms.request_info_view;
-SELECT COUNT(*) from sis_lms.request_info_view;
 
 
 /*
