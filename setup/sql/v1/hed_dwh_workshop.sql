@@ -288,8 +288,10 @@ Execute test query for on-time submission view.
 SELECT * from sis_lms.submit_date_view;
 SELECT COUNT(*) from sis_lms.submit_date_view;
 
+
 /*
 ============================================================================================
 THE END
 ============================================================================================
 */
+
